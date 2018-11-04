@@ -1,7 +1,6 @@
 import game_framework
 from pico2d import *
-from ball import Ball
-from ghost import Ghost
+from bullet import Bullet
 import math
 
 import game_world
@@ -103,7 +102,7 @@ class MoveState:
     @staticmethod
     def exit(boy, event):
         if event == SPACE:
-            boy.fire_ball()
+            boy.fire_bullet()
 
     @staticmethod
     def do(boy):
@@ -184,10 +183,12 @@ class Boy:
         self.headLspin = False
         self.headRspin = False
         self.forward = False
+        self.name = 0
 
 
-    def fire_ball(self):
-        pass
+    def fire_bullet(self):
+        bullet = Bullet(self.size*0.5*-math.sin(self.angle+self.headangle)+self.x, self.size*0.5*math.cos(self.angle+self.headangle)+self.y, self.angle + self.headangle, 400.0)
+        game_world.add_object(bullet, 1)
 
 
     def fire_ghost(self):

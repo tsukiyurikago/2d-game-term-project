@@ -69,10 +69,15 @@ class MoveState:
         #    enemy.angle += enemy.spinspeed * game_framework.frame_time
         #else:
         #    enemy.angle -= enemy.spinspeed * game_framework.frame_time
-        enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90 * 3.14 / 180)
-
+        enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
         enemy.y += math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
         enemy.x += -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
+        for bullet in game_world.objects[1]:
+            if bullet.name == 1:
+                if bullet.x < enemy.x + (enemy.size / 2) and bullet.x > enemy.x - (enemy.size / 2) and bullet.y < enemy.y + (enemy.size / 2) and bullet.y > enemy.y - (enemy.size / 2):
+                    game_world.remove_object(bullet)
+                    enemy.hp -= 1
+
         enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
 
     @staticmethod
@@ -113,7 +118,7 @@ class Enemy:
 
     image = None
 
-    def __init__(self, x = 0, y = 0, spinspeed = 1.0):
+    def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10):
         self.x, self.y = x, y
         if Enemy.image == None:
             Enemy.image = load_image('testimg.png')
@@ -127,6 +132,8 @@ class Enemy:
         self.spinspeed = spinspeed
         self.speed = 50.0
         self.forward = False
+        self.hp = hp
+        self.name = 2
 
 
     def fire_ball(self):
@@ -146,7 +153,9 @@ class Enemy:
             self.cur_state.exit(self, event)
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
+        if self.hp <= 0:
+            game_world.remove_object(self)
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % get_time(), (255, 255, 0))
+        self.font.draw(self.x - 60, self.y + 50, '(Time: %d)' % self.hp, (255, 255, 0))

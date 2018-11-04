@@ -1,5 +1,6 @@
 from pico2d import *
 import game_world
+import game_framework
 
 class Bullet:
     image = None
@@ -7,13 +8,19 @@ class Bullet:
     def __init__(self, x = 400, y = 300, angle = 0.0, speed = 0.0):
         if Bullet.image == None:
             Bullet.image = load_image('testbullet.png')
-        self.x, self.y, self.velocity = x, y, velocity
+        self.x = x
+        self.y = y
+        self.angle = angle
+        self.speed = speed
+        self.name = 1
 
     def draw(self):
-        self.image.draw(self.x, self.y)
+        self.image.rotate_draw(self.angle, self.x, self.y, 16, 16)
 
     def update(self):
-        self.x += self.velocity
+        self.y += math.cos(self.angle) * self.speed * game_framework.frame_time
+        self.x += -math.sin(self.angle) * self.speed * game_framework.frame_time
 
-        if self.x < 25 or self.x > 1600 - 25:
+        if self.x < 0 or self.x > 1024 or self.y < 0 or self.y > 768:
             game_world.remove_object(self)
+

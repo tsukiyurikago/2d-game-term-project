@@ -14,6 +14,8 @@ from enemy import Enemy
 name = "MainState"
 
 boy = None
+enemys = []
+time = 0.0
 
 def enter():
     global boy
@@ -22,12 +24,10 @@ def enter():
     game_world.add_object(grass, 0)
     game_world.add_object(boy, 1)
 
-    enemy = Enemy(500,500,1.0)
-    game_world.add_object(enemy, 1)
-
 
 def exit():
     game_world.clear()
+
 
 def pause():
     pass
@@ -51,6 +51,13 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+    global time
+    time += game_framework.frame_time
+    if time > 2.0:
+        enemy = Enemy(500,500,1.0,5)
+        game_world.add_object(enemy, 1)
+        time = 0.0
+
 
 
 def draw():
@@ -58,9 +65,3 @@ def draw():
     for game_object in game_world.all_objects():
         game_object.draw()
     update_canvas()
-
-
-
-
-
-
