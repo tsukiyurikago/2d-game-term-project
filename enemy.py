@@ -65,7 +65,11 @@ class MoveState:
 
     @staticmethod
     def do(enemy):
-        enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
+        #if enemy.angle < math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180):
+        #    enemy.angle += enemy.spinspeed * game_framework.frame_time
+        #else:
+        #    enemy.angle -= enemy.spinspeed * game_framework.frame_time
+        enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90 * 3.14 / 180)
 
         enemy.y += math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
         enemy.x += -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
