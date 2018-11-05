@@ -90,6 +90,7 @@ class MoveState:
         elif event == FORWARD_UP:
             boy.forward = False
         elif event == LEFTSIDE_DOWN:
+            boy.size += 1
             boy.headLspin = True
         elif event == LEFTSIDE_UP:
             boy.headLspin = False
@@ -168,7 +169,7 @@ class Boy:
         self.event_que = []
         self.cur_state = MoveState
         self.cur_state.enter(self, None)
-        self.size = 128
+        self.size = 64
         self.angle = 0.0
         self.Lspin = False
         self.Rspin = False
@@ -187,6 +188,7 @@ class Boy:
     def fire_bullet(self):
         bullet = Bullet(self.size*0.5*-math.sin(self.angle+self.headangle)+self.x, self.size*0.5*math.cos(self.angle+self.headangle)+self.y, self.angle + self.headangle, 400.0)
         game_world.add_object(bullet, 1)
+        self.size -= 1
 
 
     def fire_ghost(self):

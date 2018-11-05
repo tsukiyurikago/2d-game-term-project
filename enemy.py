@@ -132,7 +132,7 @@ class Enemy:
         self.event_que = []
         self.cur_state = MoveState
         self.cur_state.enter(self, None)
-        self.size = 128
+        self.size = 32
         self.angle = 0.0
         self.spinspeed = spinspeed
         self.speed = 50.0

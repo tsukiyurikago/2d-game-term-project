@@ -57,7 +57,7 @@ def update():
     global time
     time += game_framework.frame_time
     if time > 2.0:
-        enemy = Enemy(500,500,1.0,5)
+        enemy = Enemy(50,random.randint(100,600),1.0,5)
         game_world.add_object(enemy, 1)
         time = 0.0
     for o in game_world.objects[1]:
