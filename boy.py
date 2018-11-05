@@ -35,7 +35,6 @@ key_event_table = {
     (SDL_KEYUP, SDLK_a): LEFTSIDE_UP,
     (SDL_KEYDOWN, SDLK_d): RIGHTSIDE_DOWN,
     (SDL_KEYUP, SDLK_d): RIGHTSIDE_UP
-
 }
 
 
@@ -119,20 +118,17 @@ class MoveState:
             boy.angle += boy.headspeed * game_framework.frame_time * 0.2
             boy.headangle += boy.headspeed * game_framework.frame_time
         if boy.forward == True:
-            boy.yspeed = math.cos(boy.angle) * boy.speed
-            boy.xspeed = -math.sin(boy.angle) * boy.speed
+            boy.y += math.cos(boy.angle) * boy.speed * game_framework.frame_time
+            boy.x += -math.sin(boy.angle) * boy.speed * game_framework.frame_time
         if boy.headRspin == False and boy.headLspin == False:
             pass
-        boy.x += boy.xspeed * game_framework.frame_time
-        boy.y += boy.yspeed * game_framework.frame_time
-        boy.xspeed *= 0.95
-        boy.yspeed *= 0.95
+        #boy.xspeed *= 0.95
+        #boy.yspeed *= 0.95
 
     @staticmethod
     def draw(boy):
         boy.image.rotate_draw(boy.angle,boy.x,boy.y,boy.size,boy.size)
         boy.headimg.rotate_draw(boy.headangle + boy.angle,boy.x,boy.y,boy.size,boy.size)
-
 
 class SleepState:
 
@@ -154,14 +150,10 @@ class SleepState:
         boy.headimg.rotate_draw(boy.headangle,boy.x,boy.y,boy.size,boy.size)
 
 
-
-
-
-
 next_state_table = {
     IdleState: {RIGHT_UP: MoveState, LEFT_UP: MoveState, RIGHT_DOWN: MoveState, LEFT_DOWN: MoveState, SLEEP_TIMER: SleepState, SPACE: IdleState},
-    MoveState: {RIGHT_UP: MoveState, LEFT_UP: MoveState, LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState, SPACE: MoveState, FORWARD_UP: MoveState, FORWARD_DOWN: MoveState, LEFTSIDE_UP: MoveState, LEFTSIDE_DOWN :MoveState, RIGHTSIDE_UP: MoveState, RIGHTSIDE_DOWN: MoveState},
-    SleepState: {LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState, LEFT_UP: MoveState, RIGHT_UP: MoveState, SPACE: IdleState}
+    MoveState: {RIGHT_UP: MoveState, LEFT_UP: MoveState, LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState, SPACE: MoveState, FORWARD_UP: MoveState, FORWARD_DOWN: MoveState, LEFTSIDE_UP: MoveState, LEFTSIDE_DOWN :MoveState, RIGHTSIDE_UP: MoveState, RIGHTSIDE_DOWN: MoveState, SLEEP_TIMER: SleepState},
+    SleepState: {LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState, LEFT_UP: MoveState, RIGHT_UP: MoveState, SPACE: IdleState, SLEEP_TIMER: SleepState}
 }
 
 class Boy:

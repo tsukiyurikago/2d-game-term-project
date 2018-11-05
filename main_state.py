@@ -9,6 +9,7 @@ import game_world
 from boy import Boy
 from grass import Grass
 from enemy import Enemy
+from wall import Wall
 
 
 name = "MainState"
@@ -23,6 +24,8 @@ def enter():
     grass = Grass()
     game_world.add_object(grass, 0)
     game_world.add_object(boy, 1)
+    #wall = Wall(0,768,1024,768,1)
+    #game_world.add_object(wall, 1)
 
 
 def exit():
@@ -57,6 +60,16 @@ def update():
         enemy = Enemy(500,500,1.0,5)
         game_world.add_object(enemy, 1)
         time = 0.0
+    for o in game_world.objects[1]:
+        if o.name == 0 or o.name == 2:
+            if o.x > 1024:
+                o.x = 1023
+            if o.x < 0:
+                o.x = 0
+            if o.y > 768:
+                o.y = 767
+            if o.y < 0:
+                o.y =0
 
 
 

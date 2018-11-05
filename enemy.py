@@ -1,7 +1,5 @@
 import game_framework
 from pico2d import *
-from ball import Ball
-from ghost import Ghost
 import math
 
 import game_world
@@ -81,8 +79,8 @@ class MoveState:
                 if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) < (bullet.size*0.5) + (enemy.size*0.5):
                     enemy.y -= math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
                     enemy.x -= -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
-                    bullet.x += -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
-                    bullet.y += math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
+                    bullet.x += -math.sin(enemy.angle) * bullet.speed * game_framework.frame_time
+                    bullet.y += math.cos(enemy.angle) * bullet.speed * game_framework.frame_time
 
 
         enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
@@ -165,4 +163,4 @@ class Enemy:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.x - 60, self.y + 50, '(Time: %d)' % self.hp, (255, 255, 0))
+        self.font.draw(self.x - 60, self.y + 50, '(hp: %d)' % self.hp, (255, self.hp*50, self.hp*50))
