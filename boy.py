@@ -119,10 +119,14 @@ class MoveState:
             boy.angle += boy.headspeed * game_framework.frame_time * 0.2
             boy.headangle += boy.headspeed * game_framework.frame_time
         if boy.forward == True:
-            boy.y += math.cos(boy.angle) * boy.speed * game_framework.frame_time
-            boy.x += -math.sin(boy.angle) * boy.speed * game_framework.frame_time
+            boy.yspeed = math.cos(boy.angle) * boy.speed
+            boy.xspeed = -math.sin(boy.angle) * boy.speed
         if boy.headRspin == False and boy.headLspin == False:
             pass
+        boy.x += boy.xspeed * game_framework.frame_time
+        boy.y += boy.yspeed * game_framework.frame_time
+        boy.xspeed *= 0.95
+        boy.yspeed *= 0.95
 
     @staticmethod
     def draw(boy):
@@ -177,6 +181,8 @@ class Boy:
         self.Lspin = False
         self.Rspin = False
         self.spinspeed = 3.0
+        self.xspeed = 0.0
+        self.yspeed = 0.0
         self.speed = 100.0
         self.headangle = 0.0
         self.headspeed = 3.0

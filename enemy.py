@@ -81,6 +81,8 @@ class MoveState:
                 if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) < (bullet.size*0.5) + (enemy.size*0.5):
                     enemy.y -= math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
                     enemy.x -= -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
+                    bullet.x += -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
+                    bullet.y += math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
 
 
         enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
