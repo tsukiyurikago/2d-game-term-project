@@ -6,6 +6,7 @@ from pico2d import *
 import game_framework
 import game_world
 
+from background import FixedBackground as Background
 from boy import Boy
 from grass import Grass
 from enemy import Enemy
@@ -15,17 +16,23 @@ from wall import Wall
 name = "MainState"
 
 boy = None
-enemys = []
+background = None
 time = 0.0
 
 def enter():
     global boy
     boy = Boy()
-    grass = Grass()
-    game_world.add_object(grass, 0)
     game_world.add_object(boy, 1)
+
+    global background
+    background = Background()
+    game_world.add_object(background, 0)
+
     #wall = Wall(0,768,1024,768,1)
     #game_world.add_object(wall, 1)
+
+    background.set_center_object(boy)
+    boy.set_background(background)
 
 
 def exit():
@@ -58,16 +65,17 @@ def update():
     time += game_framework.frame_time
     if time > 2.0:
         enemy = Enemy(50,random.randint(100,600),1.0,5)
+        enemy.center_object = boy
         game_world.add_object(enemy, 1)
         time = 0.0
     for o in game_world.objects[1]:
         if o.name == 0 or o.name == 2:
-            if o.x > 1024:
-                o.x = 1023
+            if o.x > 2048:
+                o.x = 2048
             if o.x < 0:
                 o.x = 0
-            if o.y > 768:
-                o.y = 767
+            if o.y > 2048:
+                o.y = 2048
             if o.y < 0:
                 o.y =0
 

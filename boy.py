@@ -127,13 +127,14 @@ class MoveState:
 
         boy.y += (math.cos(boy.angle) * boy.speed + boy.yspeed) * game_framework.frame_time
         boy.x += (-math.sin(boy.angle) * boy.speed + boy.xspeed) * game_framework.frame_time
-        boy.xspeed *= 0.9
-        boy.yspeed *= 0.9
+        boy.xspeed *= 0.95
+        boy.yspeed *= 0.95
 
     @staticmethod
     def draw(boy):
-        boy.image.rotate_draw(boy.angle,boy.x,boy.y,boy.size,boy.size)
-        boy.headimg.rotate_draw(boy.headangle + boy.angle,boy.x,boy.y,boy.size,boy.size)
+        cx, cy = boy.x - boy.bg.window_left, boy.y - boy.bg.window_bottom
+        boy.image.rotate_draw(boy.angle,cx,cy,boy.size,boy.size)
+        boy.headimg.rotate_draw(boy.headangle + boy.angle,cx,cy,boy.size,boy.size)
 
 class SleepState:
 
@@ -164,6 +165,8 @@ next_state_table = {
 class Boy:
 
     def __init__(self):
+        self.canvas_width = get_canvas_width()
+        self.canvas_height = get_canvas_height()
         self.x, self.y = 1600 // 2, 90
         # Boy is only once created, so instance image loading is fine
         self.image = load_image('testimg.png')
@@ -191,12 +194,16 @@ class Boy:
 
     def fire_bullet(self):
         bullet = Bullet(self.size*0.5*-math.sin(self.angle+self.headangle)+self.x, self.size*0.5*math.cos(self.angle+self.headangle)+self.y, self.angle + self.headangle, 400.0)
+        bullet.center_object = self
         game_world.add_object(bullet, 1)
         self.size -= 1
 
 
-    def fire_ghost(self):
-        pass
+    def set_background(self, bg):
+        self.bg = bg
+        self.x = self.bg.w / 2
+        self.y = self.bg.h / 2
+
 
     def add_event(self, event):
         self.event_que.insert(0, event)

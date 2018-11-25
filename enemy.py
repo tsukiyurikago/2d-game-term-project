@@ -88,7 +88,7 @@ class MoveState:
 
     @staticmethod
     def draw(enemy):
-        enemy.image.rotate_draw(enemy.angle,enemy.x,enemy.y,enemy.size,enemy.size)
+        enemy.image.rotate_draw(enemy.angle,enemy.cx,enemy.cy,enemy.size,enemy.size)
 
 
 class SleepState:
@@ -140,7 +140,11 @@ class Enemy:
         self.forward = False
         self.hp = hp
         self.name = 2
+        self.cx = 0.0
+        self.cy = 0.0
 
+    def set_center_object(self, boy):
+        self.center_object = boy
 
     def fire_ball(self):
         pass
@@ -153,6 +157,7 @@ class Enemy:
         self.event_que.insert(0, event)
 
     def update(self):
+        self.cx, self.cy = self.x - self.center_object.bg.window_left, self.y - self.center_object.bg.window_bottom
         self.cur_state.do(self)
         if len(self.event_que) > 0:
             event = self.event_que.pop()
@@ -164,4 +169,4 @@ class Enemy:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.x - 60, self.y + 50, '(hp: %d)' % self.hp, (255, self.hp*50, self.hp*50))
+        self.font.draw(self.cx - 60, self.cy + 50, '(hp: %d)' % self.hp, (255, self.hp*50, self.hp*50))
