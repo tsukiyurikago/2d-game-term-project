@@ -65,7 +65,7 @@ def update():
     for game_object in game_world.all_objects():
         game_object.update()
     global time
-#    time += game_framework.frame_time
+    time += game_framework.frame_time
     if time > 2.0:
         enemy = Enemy(50,random.randint(100,600),1.0,5)
         enemy.center_object = boy

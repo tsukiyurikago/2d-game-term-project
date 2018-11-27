@@ -76,13 +76,17 @@ class MoveState:
             if bullet.name == 0:
                 if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) < (bullet.size*0.5) + (enemy.size*0.5):
                     enemy.speed = 0.0
-                    bullet.xspeed = -math.sin(enemy.angle) * 200.0
-                    bullet.yspeed = math.cos(enemy.angle) * 200.0
+                    enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
+                    enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
+                    bullet.x += -math.sin(enemy.angle) * 1
+                    bullet.y += math.cos(enemy.angle) * 1
                 else:
                     enemy.speed = 50.0
+                    enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
+                    enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
 
-        enemy.y += math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
-        enemy.x += -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
+        enemy.y += enemy.yspeed
+        enemy.x += enemy.xspeed
 
 
         enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
@@ -143,6 +147,8 @@ class Enemy:
         self.name = 2
         self.cx = 0.0
         self.cy = 0.0
+        self.xspeed = 0.0
+        self.yspeed = 0.0
 
     def set_center_object(self, boy):
         self.center_object = boy

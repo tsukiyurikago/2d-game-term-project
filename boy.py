@@ -120,6 +120,8 @@ class MoveState:
             boy.headangle += boy.headspeed * game_framework.frame_time
         if boy.forward == True:
             boy.speed = 100.0
+            boy.xspeed = (-math.sin(boy.angle) * boy.speed + boy.xspeed) * game_framework.frame_time
+            boy.yspeed = (math.cos(boy.angle) * boy.speed + boy.yspeed) * game_framework.frame_time
         else:
             boy.speed = 0.0
         if boy.headRspin == False and boy.headLspin == False:
@@ -131,10 +133,10 @@ class MoveState:
                     game_world.remove_object(bullet)
             if bullet.name == 2:
                 if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) < (bullet.size*0.5) + (boy.size*0.5):
-                    boy.speed = 0.0
+                    pass
 
-        boy.y += (math.cos(boy.angle) * boy.speed + boy.yspeed) * game_framework.frame_time
-        boy.x += (-math.sin(boy.angle) * boy.speed + boy.xspeed) * game_framework.frame_time
+        boy.y += boy.yspeed
+        boy.x += boy.xspeed
         boy.xspeed *= 0.95
         boy.yspeed *= 0.95
 
