@@ -200,6 +200,7 @@ class Boy:
         self.headRspin = False
         self.forward = False
         self.name = 0
+        self.mp = 100
 
 
     def fire_bullet(self):

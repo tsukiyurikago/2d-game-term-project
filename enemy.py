@@ -149,6 +149,7 @@ class Enemy:
         self.cy = 0.0
         self.xspeed = 0.0
         self.yspeed = 0.0
+        self.mp = 100
 
     def set_center_object(self, boy):
         self.center_object = boy
