@@ -68,8 +68,6 @@ class MoveState:
         #else:
         #    enemy.angle -= enemy.spinspeed * game_framework.frame_time
         enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
-        enemy.y += math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
-        enemy.x += -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
                 if bullet.x < enemy.x + (enemy.size / 2) and bullet.x > enemy.x - (enemy.size / 2) and bullet.y < enemy.y + (enemy.size / 2) and bullet.y > enemy.y - (enemy.size / 2):
@@ -82,6 +80,9 @@ class MoveState:
                     bullet.yspeed = math.cos(enemy.angle) * 200.0
                 else:
                     enemy.speed = 50.0
+
+        enemy.y += math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
+        enemy.x += -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
 
 
         enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8

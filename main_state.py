@@ -20,20 +20,23 @@ background = None
 time = 0.0
 
 def enter():
+
     global boy
-    boy = Boy()
+    boy = Boy(0,0)
     game_world.add_object(boy, 1)
 
     global background
     background = Background()
     game_world.add_object(background, 0)
 
-    #wall = Wall(0,768,1024,768,1)
-    #game_world.add_object(wall, 1)
+    wall = Wall(100,100,400,400)
+    game_world.add_object(wall, 1)
 
     background.set_center_object(boy)
     boy.set_background(background)
 
+    boy.x=0
+    boy.y=0
 
 def exit():
     game_world.clear()
@@ -62,7 +65,7 @@ def update():
     for game_object in game_world.all_objects():
         game_object.update()
     global time
-    time += game_framework.frame_time
+#    time += game_framework.frame_time
     if time > 2.0:
         enemy = Enemy(50,random.randint(100,600),1.0,5)
         enemy.center_object = boy

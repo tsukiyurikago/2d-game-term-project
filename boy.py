@@ -125,6 +125,14 @@ class MoveState:
         if boy.headRspin == False and boy.headLspin == False:
             pass
 
+        for bullet in game_world.objects[1]:
+            if bullet.name == 1:
+                if bullet.x < boy.x + (boy.size / 2) and bullet.x > boy.x - (boy.size / 2) and bullet.y < boy.y + (boy.size / 2) and bullet.y > boy.y - (boy.size / 2):
+                    game_world.remove_object(bullet)
+            if bullet.name == 2:
+                if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) < (bullet.size*0.5) + (boy.size*0.5):
+                    boy.speed = 0.0
+
         boy.y += (math.cos(boy.angle) * boy.speed + boy.yspeed) * game_framework.frame_time
         boy.x += (-math.sin(boy.angle) * boy.speed + boy.xspeed) * game_framework.frame_time
         boy.xspeed *= 0.95
@@ -164,10 +172,10 @@ next_state_table = {
 
 class Boy:
 
-    def __init__(self):
+    def __init__(self, a = 0, b = 0):
         self.canvas_width = get_canvas_width()
         self.canvas_height = get_canvas_height()
-        self.x, self.y = 1600 // 2, 90
+        self.x, self.y = 1000, 1000
         # Boy is only once created, so instance image loading is fine
         self.image = load_image('testimg.png')
         self.headimg = load_image('testimghead.png')

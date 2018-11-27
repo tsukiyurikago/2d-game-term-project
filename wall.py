@@ -21,7 +21,14 @@ class Wall:
 
     def update(self):
         for o in game_world.objects[1]:
-            if o.name != 3:
-                t=0.0
-                s=0.0
+            if o.name == 2 or o.name == 0:
+                if o.x+(o.size/2)>self.x1 and o.x-(o.size/2) < self.x2 and o.y+(o.size/2)>self.y1 and o.y-(o.size/2) <self.y2:
+                    if o.x<self.x1 and o.y > self.y1 and o.y<self.y2:
+                        o.x = self.x1 - (o.size/2) - 1
+                    if o.x > self.x2 and o.y > self.y1 and o.y<self.y2:
+                        o.x = self.x2 + (o.size/2) + 1
+                    if o.y < self.y1 and o.x > self.x1 and o.x<self.x2:
+                        o.y = self.y1 - (o.size/2) - 1
+                    if o.y > self.y2 and o.x > self.x1 and o.x<self.x2:
+                        o.y = self.y2 + (o.size/2) + 1
                 pass
