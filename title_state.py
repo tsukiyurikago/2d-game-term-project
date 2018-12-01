@@ -1,5 +1,5 @@
 import game_framework
-import main_state
+import stage0_state
 from pico2d import *
 
 
@@ -67,7 +67,7 @@ def update():
     if(changestart):
         changetime += game_framework.frame_time
         if(changetime>3.0):
-                game_framework.change_state(main_state)
+                game_framework.change_state(stage0_state)
 
 
 def pause():

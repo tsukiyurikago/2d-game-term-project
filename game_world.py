@@ -17,8 +17,8 @@ def remove_object(o):
 
 
 def clear():
-    for o in all_objects():
-        del o
+    for o in objects:
+        o.clear()
 
 
 def all_objects():

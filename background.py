@@ -3,8 +3,8 @@ from pico2d import *
 
 class FixedBackground:
 
-    def __init__(self):
-        self.image = load_image('testbg.png')
+    def __init__(self, filename = 'testbg.png'):
+        self.image = load_image(filename)
         self.canvas_width = get_canvas_width()
         self.canvas_height = get_canvas_height()
         self.w = self.image.w
