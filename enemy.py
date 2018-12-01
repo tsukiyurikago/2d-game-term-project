@@ -1,6 +1,7 @@
 import game_framework
 from pico2d import *
 import math
+import random
 
 import game_world
 
@@ -67,23 +68,32 @@ class MoveState:
         #    enemy.angle += enemy.spinspeed * game_framework.frame_time
         #else:
         #    enemy.angle -= enemy.spinspeed * game_framework.frame_time
-        enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
+
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
                 if bullet.x < enemy.x + (enemy.size / 2) and bullet.x > enemy.x - (enemy.size / 2) and bullet.y < enemy.y + (enemy.size / 2) and bullet.y > enemy.y - (enemy.size / 2):
                     game_world.remove_object(bullet)
                     enemy.hp -= 1
             if bullet.name == 0:
-                if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) < (bullet.size*0.5) + (enemy.size*0.5):
+                enemy.distance = math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2)
+                if enemy.distance < (bullet.size*0.5) + (enemy.size*0.5):
                     enemy.speed = 0.0
                     enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
                     enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
                     bullet.x += -math.sin(enemy.angle) * 1
                     bullet.y += math.cos(enemy.angle) * 1
                 else:
-                    enemy.speed = 50.0
                     enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
                     enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
+        if enemy.distance<300.0:
+            enemy.speed = 100.0
+            enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
+        else:
+            enemy.speed = 50.0
+            enemy.timer -= game_framework.frame_time
+            if enemy.timer < 0:
+                enemy.timer += 1.0
+                enemy.angle = random.random() * 2 * math.pi
 
         enemy.y += enemy.yspeed
         enemy.x += enemy.xspeed
@@ -129,7 +139,7 @@ class Enemy:
 
     image = None
 
-    def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10):
+    def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10, attacktype = 0):
         self.x, self.y = x, y
         if Enemy.image == None:
             Enemy.image = load_image('testimg.png')
@@ -150,6 +160,9 @@ class Enemy:
         self.xspeed = 0.0
         self.yspeed = 0.0
         self.mp = 100
+        self.distance = 0
+        self.timer = 0.0
+        self.attacktype = attacktype
 
     def set_center_object(self, boy):
         self.center_object = boy

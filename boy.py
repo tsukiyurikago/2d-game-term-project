@@ -201,6 +201,7 @@ class Boy:
         self.forward = False
         self.name = 0
         self.mp = 100
+        self.hp = 10
 
 
     def fire_bullet(self):
