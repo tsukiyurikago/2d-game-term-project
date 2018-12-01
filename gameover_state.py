@@ -3,13 +3,13 @@ import main_state
 from pico2d import *
 
 
-name = "TitleState"
+name = "GameoverState"
 image = None
 
 
 def enter():
     global image
-    image = load_image('resource\img\stage1.png')
+    image = load_image('resource\img\gameover.png')
 
 
 def exit():
@@ -31,7 +31,7 @@ def handle_events():
 
 def draw():
     clear_canvas()
-    image.draw(400, 300)
+    image.draw(1024/2, 768/2)
     update_canvas()
 
 

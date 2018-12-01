@@ -17,7 +17,7 @@ def enter():
     global changestart
     global changetime
     image = load_image('resource\img\\title.png')
-    maskimage = load_image('resource\img\\mask.png')
+    maskimage = load_image('resource\img\mask.png')
     startsound = load_wav('resource\se\\title_enter.wav')
     changestart=False
     changetime = 0.0
@@ -67,7 +67,7 @@ def update():
     if(changestart):
         changetime += game_framework.frame_time
         if(changetime>3.0):
-                game_framework.change_state(stage0_state)
+            game_framework.change_state(stage0_state)
 
 
 def pause():

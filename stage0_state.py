@@ -2,6 +2,7 @@ import random
 import json
 import os
 import stage1_state
+import gameover_state
 
 from pico2d import *
 import game_framework
@@ -18,9 +19,15 @@ name = "Stage0State"
 
 boy = None
 background = None
+maskimg = None
+starttime = None
 time = 0.0
 
 def enter():
+    global maskimg
+    maskimg = load_image('resource\img\mask.png')
+    global starttime
+    starttime = 0.0
 
     global background
     background = Background('resource\img\stage0.png')
@@ -88,9 +95,20 @@ def update():
             if o.y < 0:
                 o.y =0
 
-    if(boy.y >2000 and boy.x>900 and boy.x<1200):
+    if boy.y >2000 and boy.x>900 and boy.x<1200 and boy.hp>0:
         game_world.clear()
         game_framework.change_state(stage1_state)
+
+    global starttime
+    if starttime <2.0:
+        starttime += game_framework.frame_time
+
+    if boy.hp == 0:
+        starttime += game_framework.frame_time
+        if starttime > 4.0:
+            game_world.clear()
+            game_framework.change_state(gameover_state)
+
 
 
 
@@ -98,4 +116,10 @@ def draw():
     clear_canvas()
     for game_object in game_world.all_objects():
         game_object.draw()
+    if starttime <1.0:
+        maskimg.opacify(1 - starttime)
+        maskimg.draw(1024/2, 768/2)
+    if starttime > 3.0:
+        maskimg.opacify(starttime-3)
+        maskimg.draw(1024/2, 768/2)
     update_canvas()

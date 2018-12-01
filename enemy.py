@@ -80,14 +80,20 @@ class MoveState:
                     enemy.speed = 0.0
                     enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
                     enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
-                    bullet.x += -math.sin(enemy.angle) * 1
-                    bullet.y += math.cos(enemy.angle) * 1
+                    bullet.x += -math.sin(enemy.angle)
+                    bullet.y += math.cos(enemy.angle)
+                    if bullet.godmod == False and bullet.hp>0:
+                        bullet.hp -= 1
+                        bullet.godmod = True
                 else:
                     enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
                     enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
         if enemy.distance<300.0:
-            enemy.speed = 100.0
             enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
+            if enemy.attacktype == 0:
+                enemy.speed = 100.0
+            elif enemy.attacktype == 1:
+                enemy.attackstate = True
         else:
             enemy.speed = 50.0
             enemy.timer -= game_framework.frame_time
@@ -95,8 +101,9 @@ class MoveState:
                 enemy.timer += 1.0
                 enemy.angle = random.random() * 2 * math.pi
 
-        enemy.y += enemy.yspeed
-        enemy.x += enemy.xspeed
+        if enemy.attackstate == False:
+            enemy.y += enemy.yspeed
+            enemy.x += enemy.xspeed
 
 
         enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
@@ -142,7 +149,7 @@ class Enemy:
     def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10, attacktype = 0):
         self.x, self.y = x, y
         if Enemy.image == None:
-            Enemy.image = load_image('testimg.png')
+            Enemy.image = load_image('resource\img\enemy.png')
         self.font = load_font('ENCR10B.TTF', 16)
         self.frame = 0
         self.event_que = []
@@ -162,6 +169,7 @@ class Enemy:
         self.distance = 0
         self.timer = 0.0
         self.attacktype = attacktype
+        self.attackstate = False
 
     def set_center_object(self, boy):
         self.center_object = boy

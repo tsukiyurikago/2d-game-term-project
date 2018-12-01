@@ -110,24 +110,25 @@ class MoveState:
     def do(boy):
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
 
-        if boy.Rspin == True:
-            boy.angle -= boy.spinspeed * game_framework.frame_time
-        if boy.Lspin == True:
-            boy.angle += boy.spinspeed * game_framework.frame_time
-        if boy.headRspin == True and boy.headangle > -3.0:
-            boy.angle -= boy.headspeed * game_framework.frame_time * 0.2
-            boy.headangle -= boy.headspeed * game_framework.frame_time
-        if boy.headLspin == True and boy.headangle < 3.0:
-            boy.angle += boy.headspeed * game_framework.frame_time * 0.2
-            boy.headangle += boy.headspeed * game_framework.frame_time
-        if boy.forward == True:
-            boy.speed = 100.0
-            boy.xspeed = (-math.sin(boy.angle) * boy.speed + boy.xspeed) * game_framework.frame_time
-            boy.yspeed = (math.cos(boy.angle) * boy.speed + boy.yspeed) * game_framework.frame_time
-        else:
-            boy.speed = 0.0
-        if boy.headRspin == False and boy.headLspin == False:
-            pass
+        if boy.hp >0:
+            if boy.Rspin == True:
+                boy.angle -= boy.spinspeed * game_framework.frame_time
+            if boy.Lspin == True:
+                boy.angle += boy.spinspeed * game_framework.frame_time
+            if boy.headRspin == True and boy.headangle > -3.0:
+                boy.angle -= boy.headspeed * game_framework.frame_time * 0.2
+                boy.headangle -= boy.headspeed * game_framework.frame_time
+            if boy.headLspin == True and boy.headangle < 3.0:
+                boy.angle += boy.headspeed * game_framework.frame_time * 0.2
+                boy.headangle += boy.headspeed * game_framework.frame_time
+            if boy.forward == True:
+                boy.speed = 100.0
+                boy.xspeed = (-math.sin(boy.angle) * boy.speed + boy.xspeed) * game_framework.frame_time
+                boy.yspeed = (math.cos(boy.angle) * boy.speed + boy.yspeed) * game_framework.frame_time
+            else:
+                boy.speed = 0.0
+            if boy.headRspin == False and boy.headLspin == False:
+                pass
 
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
@@ -136,6 +137,7 @@ class MoveState:
             if bullet.name == 2:
                 if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) < (bullet.size*0.5) + (boy.size*0.5):
                     pass
+
 
         boy.y += boy.yspeed
         boy.x += boy.xspeed
@@ -148,9 +150,19 @@ class MoveState:
                 boy.bulletamount += 1
             boy.bullettimer = 0.0
 
+        if boy.godmod:
+            boy.nucktime += game_framework.frame_time
+            if boy.nucktime > 1.0:
+                boy.nucktime = 0.0
+                boy.godmod = False
+
     @staticmethod
     def draw(boy):
         cx, cy = boy.x - boy.bg.window_left, boy.y - boy.bg.window_bottom
+        if boy.godmod:
+            boy.image.opacify(math.cos(boy.nucktime*30))
+        else:
+            boy.image.opacify(1)
         boy.image.rotate_draw(boy.angle,cx,cy,boy.size,boy.size)
         boy.headimg.rotate_draw(boy.headangle + boy.angle,cx,cy,boy.size,boy.size)
 
@@ -189,6 +201,7 @@ class Boy:
         # Boy is only once created, so instance image loading is fine
         self.image = load_image('resource\img\playerbody.png')
         self.headimg = load_image('resource\img\playerhead.png')
+        self.woundedimg = load_image('resource\img\injured.png')
         self.font = load_font('ENCR10B.TTF', 28)
         self.frame = 0
         self.event_que = []
@@ -213,12 +226,17 @@ class Boy:
         self.bulletcapacity=5
         self.bulletamount = 5
         self.bullettimer = 0.0
+        self.firesound = load_wav('resource\se\sel_l.wav')
+        self.firesound.set_volume(30)
+        self.godmod = False
+        self.nucktime = 0.0
 
 
     def fire_bullet(self):
         bullet = Bullet((self.size+16)*0.5*-math.sin(self.angle+self.headangle)+self.x, (self.size+16)*0.5*math.cos(self.angle+self.headangle)+self.y, self.angle + self.headangle, 400.0)
         bullet.center_object = self
         game_world.add_object(bullet, 1)
+        self.firesound.play()
         #self.size -= 1
 
 
@@ -248,6 +266,9 @@ class Boy:
         self.font.draw(50, 50, '(hp: %d)' % self.hp, (0, 0, 0))
         for i in range(self.bulletamount):
             self.font.draw(-25*i - 50 + 1024, 50, '0', (255, 0, 0))
+        self.woundedimg.opacify((10 - self.hp)*0.1)
+        self.woundedimg.draw(1024/2, 768/2)
+
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
