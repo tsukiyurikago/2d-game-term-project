@@ -1,6 +1,7 @@
 import game_framework
 from pico2d import *
 from bullet import Bullet
+from meleeattack import Fist
 import math
 
 import game_world
@@ -21,7 +22,7 @@ FRAMES_PER_ACTION = 8
 
 
 # Boy Event
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SLEEP_TIMER, SPACE, FORWARD_DOWN, FORWARD_UP, LEFTSIDE_DOWN, LEFTSIDE_UP, RIGHTSIDE_DOWN, RIGHTSIDE_UP = range(12)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SLEEP_TIMER, SPACE, FORWARD_DOWN, FORWARD_UP, LEFTSIDE_DOWN, LEFTSIDE_UP, RIGHTSIDE_DOWN, RIGHTSIDE_UP, Wbutton = range(13)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -34,7 +35,8 @@ key_event_table = {
     (SDL_KEYDOWN, SDLK_a): LEFTSIDE_DOWN,
     (SDL_KEYUP, SDLK_a): LEFTSIDE_UP,
     (SDL_KEYDOWN, SDLK_d): RIGHTSIDE_DOWN,
-    (SDL_KEYUP, SDLK_d): RIGHTSIDE_UP
+    (SDL_KEYUP, SDLK_d): RIGHTSIDE_UP,
+    (SDL_KEYDOWN, SDLK_w): Wbutton
 }
 
 
@@ -101,10 +103,16 @@ class MoveState:
 
     @staticmethod
     def exit(boy, event):
-        if event == SPACE:
+        if event == SPACE and boy.hp > 0:
             if (boy.bulletamount > 0):
                 boy.fire_bullet()
                 boy.bulletamount -= 1
+        elif event == Wbutton and boy.hp > 0 and boy.cooltime <= 0.0:
+            boy.cooltime = 1.0
+            fist = Fist(boy.x-(math.sin(boy.angle+boy.headangle)*30),boy.y+(math.cos(boy.angle+boy.headangle)*30),boy.angle+boy.headangle)
+            fist.center_object = boy
+            game_world.add_object(fist, 1)
+
 
     @staticmethod
     def do(boy):
@@ -132,7 +140,9 @@ class MoveState:
 
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
-                if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) <  boy.size*0.5 + 8:
+                if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) <  boy.size*0.5 + 8 and boy.hp > 0:
+                    boy.godmod =True
+                    boy.hp -= 1
                     game_world.remove_object(bullet)
             if bullet.name == 2:
                 if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) < (bullet.size*0.5) + (boy.size*0.5):
@@ -155,6 +165,9 @@ class MoveState:
             if boy.nucktime > 1.0:
                 boy.nucktime = 0.0
                 boy.godmod = False
+
+        if boy.cooltime > 0.0:
+            boy.cooltime -= game_framework.frame_time
 
     @staticmethod
     def draw(boy):
@@ -188,7 +201,7 @@ class SleepState:
 
 next_state_table = {
     IdleState: {RIGHT_UP: MoveState, LEFT_UP: MoveState, RIGHT_DOWN: MoveState, LEFT_DOWN: MoveState, SLEEP_TIMER: SleepState, SPACE: IdleState},
-    MoveState: {RIGHT_UP: MoveState, LEFT_UP: MoveState, LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState, SPACE: MoveState, FORWARD_UP: MoveState, FORWARD_DOWN: MoveState, LEFTSIDE_UP: MoveState, LEFTSIDE_DOWN :MoveState, RIGHTSIDE_UP: MoveState, RIGHTSIDE_DOWN: MoveState, SLEEP_TIMER: SleepState},
+    MoveState: {Wbutton: MoveState, RIGHT_UP: MoveState, LEFT_UP: MoveState, LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState, SPACE: MoveState, FORWARD_UP: MoveState, FORWARD_DOWN: MoveState, LEFTSIDE_UP: MoveState, LEFTSIDE_DOWN :MoveState, RIGHTSIDE_UP: MoveState, RIGHTSIDE_DOWN: MoveState, SLEEP_TIMER: SleepState},
     SleepState: {LEFT_DOWN: MoveState, RIGHT_DOWN: MoveState, LEFT_UP: MoveState, RIGHT_UP: MoveState, SPACE: IdleState, SLEEP_TIMER: SleepState}
 }
 
@@ -230,6 +243,7 @@ class Boy:
         self.firesound.set_volume(30)
         self.godmod = False
         self.nucktime = 0.0
+        self.cooltime = 0.0
 
 
     def fire_bullet(self):

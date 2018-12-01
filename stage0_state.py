@@ -74,16 +74,18 @@ def handle_events():
 
 
 def update():
-    for game_object in game_world.all_objects():
-        game_object.update()
-    global boy
     global time
+    global boy
+
     time += game_framework.frame_time
-    if time > 2.0:
-        enemy = Enemy(50,random.randint(100,600),1.0,5, 0)
+    if time > 5.0:
+        enemy = Enemy(random.randint(1050,1150),random.randint(850,950),1.0,5, random.randint(0,1))
         enemy.center_object = boy
         game_world.add_object(enemy, 1)
         time = 0.0
+
+    for game_object in game_world.all_objects():
+        game_object.update()
     for o in game_world.objects[1]:
         if o.name == 0 or o.name == 2:
             if o.x > 2048:

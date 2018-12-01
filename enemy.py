@@ -4,6 +4,7 @@ import math
 import random
 
 import game_world
+from bullet import Bullet
 
 # Boy Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)
@@ -71,9 +72,12 @@ class MoveState:
 
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
-                if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) <  enemy.size*0.5 + 8:
+                if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) < enemy.size*0.5 + 8 and enemy.nucked == False:
                     game_world.remove_object(bullet)
+                    enemy.nucked = True
+                    enemy.nucktime = 0.5
                     enemy.hp -= 1
+                    enemy.size -=5
             if bullet.name == 0:
                 enemy.distance = math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2)
                 if enemy.distance < (bullet.size*0.5) + (enemy.size*0.5):
@@ -88,13 +92,27 @@ class MoveState:
                 else:
                     enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
                     enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
+
+                if enemy.attackstate:
+                    if enemy.attacktype == 1:
+                        if enemy.cooltime == 0.0:
+                            realbullet = Bullet((enemy.size + 20) * 0.5 * -math.sin(enemy.angle) + enemy.x,
+                                            (enemy.size + 20) * 0.5 * math.cos(enemy.angle) + enemy.y,
+                                            enemy.angle, 200.0)
+                            realbullet.center_object = bullet
+                            game_world.add_object(realbullet, 1)
+                        enemy.cooltime += game_framework.frame_time
+                        if enemy.cooltime >2.0:
+                            enemy.cooltime = 0.0
+
         if enemy.distance<300.0:
             enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
             if enemy.attacktype == 0:
-                enemy.speed = 100.0
+                enemy.speed = 90.0
             elif enemy.attacktype == 1:
                 enemy.attackstate = True
         else:
+            enemy.attackstate = False
             enemy.speed = 50.0
             enemy.timer -= game_framework.frame_time
             if enemy.timer < 0:
@@ -105,11 +123,21 @@ class MoveState:
             enemy.y += enemy.yspeed
             enemy.x += enemy.xspeed
 
+        if enemy.nucktime > 0.0:
+            enemy.nucktime -= game_framework.frame_time
+
+        if enemy.nucktime <= 0.0:
+            enemy.nucked = False
+
 
         enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
 
     @staticmethod
     def draw(enemy):
+        if enemy.nucked:
+            enemy.image.opacify(math.cos(enemy.nucktime*30))
+        else:
+            enemy.image.opacify(1)
         enemy.image.rotate_draw(enemy.angle,enemy.cx,enemy.cy,enemy.size,enemy.size)
 
 
@@ -170,6 +198,9 @@ class Enemy:
         self.timer = 0.0
         self.attacktype = attacktype
         self.attackstate = False
+        self.cooltime = 0.0
+        self.nucktime =0.0
+        self.nucked = False
 
     def set_center_object(self, boy):
         self.center_object = boy
