@@ -9,7 +9,7 @@ logo_time = 0.0
 
 def enter():
     global image
-    image = load_image('resource\img\stage1.png')
+    image = load_image('resource\img\start.png')
 
 
 def exit():
@@ -31,7 +31,7 @@ def update():
 def draw():
     global image
     clear_canvas()
-    image.draw(400, 300)
+    image.draw(1024/2, 768/2)
     update_canvas()
 
 
