@@ -187,8 +187,8 @@ class Boy:
         self.canvas_height = get_canvas_height()
         self.x, self.y = 1000, 1000
         # Boy is only once created, so instance image loading is fine
-        self.image = load_image('testimg.png')
-        self.headimg = load_image('testimghead.png')
+        self.image = load_image('resource\img\playerbody.png')
+        self.headimg = load_image('resource\img\playerhead.png')
         self.font = load_font('ENCR10B.TTF', 28)
         self.frame = 0
         self.event_que = []

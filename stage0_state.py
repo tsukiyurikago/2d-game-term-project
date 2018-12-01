@@ -27,16 +27,20 @@ def enter():
     game_world.add_object(background, 0)
 
     global boy
-    boy = Boy(0,0)
+    boy = Boy(940,0)
     game_world.add_object(boy, 1)
 
-    wall = Wall(100,100,400,400)
+    wall = Wall(0,0,830,570)
+    game_world.add_object(wall, 1)
+    wall = Wall(830,360,1050,570)
+    game_world.add_object(wall, 1)
+    wall = Wall(1050,360,1450,730)
     game_world.add_object(wall, 1)
 
     background.set_center_object(boy)
     boy.set_background(background)
 
-    boy.x=0
+    boy.x=940
     boy.y=0
 
 def exit():

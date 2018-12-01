@@ -31,5 +31,8 @@ class Wall:
                         o.y = self.y1 - (o.size/2) - 1
                     if o.y > self.y2 and o.x > self.x1 - (o.size/2) + 1 and o.x < self.x2 + (o.size/2) - 1:
                         o.y = self.y2 + (o.size/2) + 1
+            elif o.name == 1:
+                if o.x>self.x1 and o.x < self.x2 and o.y>self.y1 and o.y <self.y2:
+                    game_world.remove_object(o)
 
                 pass

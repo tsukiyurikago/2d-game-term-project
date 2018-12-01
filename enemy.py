@@ -152,7 +152,6 @@ class Enemy:
         self.angle = 0.0
         self.spinspeed = spinspeed
         self.speed = 50.0
-        self.forward = False
         self.hp = hp
         self.name = 2
         self.cx = 0.0
