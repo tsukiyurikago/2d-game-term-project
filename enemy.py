@@ -71,7 +71,7 @@ class MoveState:
 
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
-                if bullet.x < enemy.x + (enemy.size / 2) and bullet.x > enemy.x - (enemy.size / 2) and bullet.y < enemy.y + (enemy.size / 2) and bullet.y > enemy.y - (enemy.size / 2):
+                if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) <  enemy.size*0.5 + 8:
                     game_world.remove_object(bullet)
                     enemy.hp -= 1
             if bullet.name == 0:

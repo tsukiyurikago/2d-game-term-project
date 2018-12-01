@@ -102,7 +102,9 @@ class MoveState:
     @staticmethod
     def exit(boy, event):
         if event == SPACE:
-            boy.fire_bullet()
+            if (boy.bulletamount > 0):
+                boy.fire_bullet()
+                boy.bulletamount -= 1
 
     @staticmethod
     def do(boy):
@@ -112,10 +114,10 @@ class MoveState:
             boy.angle -= boy.spinspeed * game_framework.frame_time
         if boy.Lspin == True:
             boy.angle += boy.spinspeed * game_framework.frame_time
-        if boy.headRspin == True and boy.headangle > -2.0:
+        if boy.headRspin == True and boy.headangle > -3.0:
             boy.angle -= boy.headspeed * game_framework.frame_time * 0.2
             boy.headangle -= boy.headspeed * game_framework.frame_time
-        if boy.headLspin == True and boy.headangle < 2.0:
+        if boy.headLspin == True and boy.headangle < 3.0:
             boy.angle += boy.headspeed * game_framework.frame_time * 0.2
             boy.headangle += boy.headspeed * game_framework.frame_time
         if boy.forward == True:
@@ -129,7 +131,7 @@ class MoveState:
 
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
-                if bullet.x < boy.x + (boy.size / 2) and bullet.x > boy.x - (boy.size / 2) and bullet.y < boy.y + (boy.size / 2) and bullet.y > boy.y - (boy.size / 2):
+                if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) <  boy.size*0.5 + 8:
                     game_world.remove_object(bullet)
             if bullet.name == 2:
                 if math.sqrt((bullet.x - boy.x)**2 + (bullet.y - boy.y)**2) < (bullet.size*0.5) + (boy.size*0.5):
@@ -139,6 +141,12 @@ class MoveState:
         boy.x += boy.xspeed
         boy.xspeed *= 0.95
         boy.yspeed *= 0.95
+
+        boy.bullettimer += game_framework.frame_time
+        if(boy.bullettimer > 0.5):
+            if(boy.bulletamount < boy.bulletcapacity):
+                boy.bulletamount += 1
+            boy.bullettimer = 0.0
 
     @staticmethod
     def draw(boy):
@@ -181,7 +189,7 @@ class Boy:
         # Boy is only once created, so instance image loading is fine
         self.image = load_image('testimg.png')
         self.headimg = load_image('testimghead.png')
-        self.font = load_font('ENCR10B.TTF', 16)
+        self.font = load_font('ENCR10B.TTF', 28)
         self.frame = 0
         self.event_que = []
         self.cur_state = MoveState
@@ -202,13 +210,16 @@ class Boy:
         self.name = 0
         self.mp = 100
         self.hp = 10
+        self.bulletcapacity=5
+        self.bulletamount = 5
+        self.bullettimer = 0.0
 
 
     def fire_bullet(self):
-        bullet = Bullet(self.size*0.5*-math.sin(self.angle+self.headangle)+self.x, self.size*0.5*math.cos(self.angle+self.headangle)+self.y, self.angle + self.headangle, 400.0)
+        bullet = Bullet((self.size+16)*0.5*-math.sin(self.angle+self.headangle)+self.x, (self.size+16)*0.5*math.cos(self.angle+self.headangle)+self.y, self.angle + self.headangle, 400.0)
         bullet.center_object = self
         game_world.add_object(bullet, 1)
-        self.size -= 1
+        #self.size -= 1
 
 
     def set_background(self, bg):
@@ -230,6 +241,13 @@ class Boy:
 
     def draw(self):
         self.cur_state.draw(self)
+        self.font.draw(50, 52, '(hp: %d)' % self.hp, (255, 0, 0))
+        self.font.draw(50, 48, '(hp: %d)' % self.hp, (255, 0, 0))
+        self.font.draw(52, 50, '(hp: %d)' % self.hp, (255, 0, 0))
+        self.font.draw(48, 50, '(hp: %d)' % self.hp, (255, 0, 0))
+        self.font.draw(50, 50, '(hp: %d)' % self.hp, (0, 0, 0))
+        for i in range(self.bulletamount):
+            self.font.draw(-25*i - 50 + 1024, 50, '0', (255, 0, 0))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
