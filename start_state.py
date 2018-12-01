@@ -32,6 +32,7 @@ def draw():
     global image
     clear_canvas()
     image.draw(1024/2, 768/2)
+    draw_rectangle(1024/2-500,50,1024/2-500+(logo_time*1000),51)
     update_canvas()
 
 

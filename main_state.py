@@ -21,13 +21,13 @@ time = 0.0
 
 def enter():
 
-    global boy
-    boy = Boy(0,0)
-    game_world.add_object(boy, 1)
-
     global background
     background = Background()
     game_world.add_object(background, 0)
+
+    global boy
+    boy = Boy(0,0)
+    game_world.add_object(boy, 1)
 
     wall = Wall(100,100,400,400)
     game_world.add_object(wall, 1)
