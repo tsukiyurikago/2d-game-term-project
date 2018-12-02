@@ -31,133 +31,92 @@ key_event_table = {
 
 # Boy States
 
-class IdleState:
-
-    @staticmethod
-    def enter(enemy, event):
-        pass
-
-    @staticmethod
-    def exit(enemy, event):
-        pass
-
-    @staticmethod
-    def do(enemy):
-        enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-        enemy.timer += game_framework.frame_time
-        if enemy.timer > 9.6:
-            enemy.add_event(SLEEP_TIMER)
-
-    @staticmethod
-    def draw(enemy):
-        enemy.image.rotate_draw(enemy.angle, enemy.x, enemy.y, enemy.size, enemy.size)
-
-
 class MoveState:
 
     @staticmethod
-    def enter(enemy, event):
+    def enter(lymph_node, event):
         pass
 
     @staticmethod
-    def exit(enemy, event):
+    def exit(lymph_node, event):
         pass
 
     @staticmethod
-    def do(enemy):
-        #if enemy.angle < math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180):
-        #    enemy.angle += enemy.spinspeed * game_framework.frame_time
+    def do(lymph_node):
+        #if lymph_node.angle < math.atan2(-game_framework.stack[0].boy.y + lymph_node.y, -game_framework.stack[0].boy.x + lymph_node.x) + (90*3.14/180):
+        #    lymph_node.angle += lymph_node.spinspeed * game_framework.frame_time
         #else:
-        #    enemy.angle -= enemy.spinspeed * game_framework.frame_time
+        #    lymph_node.angle -= lymph_node.spinspeed * game_framework.frame_time
 
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
-                if math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2) < enemy.size*0.5 + 8 and enemy.nucked == False:
+                if math.sqrt((bullet.x - lymph_node.x)**2 + (bullet.y - lymph_node.y)**2) < lymph_node.size*0.5 + 8 and lymph_node.nucked == False:
                     game_world.remove_object(bullet)
-                    enemy.nucked = True
-                    enemy.nucktime = 0.5
-                    enemy.hp -= 1
-                    enemy.size -=5
+                    lymph_node.nucked = True
+                    lymph_node.nucktime = 0.5
+                    lymph_node.hp -= 1
+                    lymph_node.size -=5
             if bullet.name == 0:
-                enemy.distance = math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2)
-                if enemy.distance < (bullet.size*0.5) + (enemy.size*0.5):
-                    enemy.speed = 0.0
-                    enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
-                    enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
-                    bullet.x += -math.sin(enemy.angle)
-                    bullet.y += math.cos(enemy.angle)
+                lymph_node.distance = math.sqrt((bullet.x - lymph_node.x)**2 + (bullet.y - lymph_node.y)**2)
+                if lymph_node.distance < (bullet.size*0.5) + (lymph_node.size*0.5):
+                    lymph_node.speed = 0.0
+                    lymph_node.xspeed = -math.sin(lymph_node.angle) * lymph_node.speed * game_framework.frame_time
+                    lymph_node.yspeed = math.cos(lymph_node.angle) * lymph_node.speed * game_framework.frame_time
+                    bullet.x += -math.sin(lymph_node.angle)
+                    bullet.y += math.cos(lymph_node.angle)
                     if bullet.godmod == False and bullet.hp>0:
                         bullet.hp -= 1
                         bullet.godmod = True
                 else:
-                    enemy.xspeed = -math.sin(enemy.angle) * enemy.speed * game_framework.frame_time
-                    enemy.yspeed = math.cos(enemy.angle) * enemy.speed * game_framework.frame_time
+                    lymph_node.xspeed = -math.sin(lymph_node.angle) * lymph_node.speed * game_framework.frame_time
+                    lymph_node.yspeed = math.cos(lymph_node.angle) * lymph_node.speed * game_framework.frame_time
 
-                if enemy.attackstate:
-                    if enemy.attacktype == 1:
-                        if enemy.cooltime == 0.0:
-                            realbullet = Bullet((enemy.size + 20) * 0.5 * -math.sin(enemy.angle) + enemy.x,
-                                            (enemy.size + 20) * 0.5 * math.cos(enemy.angle) + enemy.y,
-                                            enemy.angle, 200.0)
+                if lymph_node.attackstate:
+                    if lymph_node.attacktype == 1:
+                        if lymph_node.cooltime == 0.0:
+                            realbullet = Bullet((lymph_node.size + 20) * 0.5 * -math.sin(lymph_node.angle) + lymph_node.x,
+                                            (lymph_node.size + 20) * 0.5 * math.cos(lymph_node.angle) + lymph_node.y,
+                                                lymph_node.angle, 200.0)
                             realbullet.center_object = bullet
                             game_world.add_object(realbullet, 1)
-                        enemy.cooltime += game_framework.frame_time
-                        if enemy.cooltime >2.0:
-                            enemy.cooltime = 0.0
+                            lymph_node.cooltime += game_framework.frame_time
+                        if lymph_node.cooltime >2.0:
+                            lymph_node.cooltime = 0.0
 
-        if enemy.distance<300.0:
-            enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
-            if enemy.attacktype == 0:
-                enemy.speed = 90.0
-            elif enemy.attacktype == 1:
-                enemy.attackstate = True
+        if lymph_node.distance<300.0:
+            lymph_node.angle = math.atan2(-game_framework.stack[0].boy.y + lymph_node.y, -game_framework.stack[0].boy.x + lymph_node.x) + (90*3.14/180)
+            if lymph_node.attacktype == 0:
+                lymph_node.speed = 90.0
+            elif lymph_node.attacktype == 1:
+                lymph_node.attackstate = True
         else:
-            enemy.attackstate = False
-            enemy.speed = 50.0
-            enemy.timer -= game_framework.frame_time
-            if enemy.timer < 0:
-                enemy.timer += 1.0
-                enemy.angle = random.random() * 2 * math.pi
+            lymph_node.attackstate = False
+            lymph_node.speed = 50.0
+            lymph_node.timer -= game_framework.frame_time
+            if lymph_node.timer < 0:
+                lymph_node.timer += 1.0
+                lymph_node.angle = random.random() * 2 * math.pi
 
-        if enemy.attackstate == False:
-            enemy.y += enemy.yspeed
-            enemy.x += enemy.xspeed
+        if lymph_node.attackstate == False:
+            lymph_node.y += lymph_node.yspeed
+            lymph_node.x += lymph_node.xspeed
 
-        if enemy.nucktime > 0.0:
-            enemy.nucktime -= game_framework.frame_time
+        if lymph_node.nucktime > 0.0:
+            lymph_node.nucktime -= game_framework.frame_time
 
-        if enemy.nucktime <= 0.0:
-            enemy.nucked = False
+        if lymph_node.nucktime <= 0.0:
+            lymph_node.nucked = False
 
-
-        enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+            lymph_node.frame = (lymph_node.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
 
     @staticmethod
-    def draw(enemy):
-        if enemy.nucked:
-            enemy.image.opacify(math.cos(enemy.nucktime*30))
+    def draw(lymph_node):
+        if lymph_node.nucked:
+            lymph_node.image.opacify(math.cos(lymph_node.nucktime*30))
         else:
-            enemy.image.opacify(1)
-        enemy.image.rotate_draw(enemy.angle,enemy.cx,enemy.cy,enemy.size,enemy.size)
+            lymph_node.image.opacify(1)
+            lymph_node.image.rotate_draw(lymph_node.angle,lymph_node.cx,lymph_node.cy,lymph_node.size,lymph_node.size)
 
-
-class SleepState:
-
-    @staticmethod
-    def enter(enemy, event):
-        enemy.frame = 0
-
-    @staticmethod
-    def exit(enemy, event):
-        pass
-
-    @staticmethod
-    def do(enemy):
-        enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-
-    @staticmethod
-    def draw(enemy):
-        enemy.image.rotate_draw(enemy.angle,enemy.x,enemy.y,enemy.size,enemy.size)
 
 
 
@@ -165,19 +124,17 @@ class SleepState:
 
 
 next_state_table = {
-    IdleState: {SLEEP_TIMER: SleepState},
     MoveState: {},
-    SleepState: {}
 }
 
-class Enemy:
+class Lymphnode:
 
     image = None
 
     def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10, attacktype = 0):
         self.x, self.y = x, y
-        if Enemy.image == None:
-            Enemy.image = load_image('resource\img\enemy.png')
+        if Lymphnode.image == None:
+            Lymphnode.image = load_image('resource\img\lymph_node.png')
         self.font = load_font('ENCR10B.TTF', 16)
         self.frame = 0
         self.event_que = []
@@ -188,7 +145,7 @@ class Enemy:
         self.spinspeed = spinspeed
         self.speed = 50.0
         self.hp = hp
-        self.name = 2
+        self.name = 22
         self.cx = 0.0
         self.cy = 0.0
         self.xspeed = 0.0
