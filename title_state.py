@@ -26,8 +26,10 @@ def enter():
 def exit():
     global image
     global startsound
+    global maskimage
     del(startsound)
     del(image)
+    del(maskimage)
 
 
 def handle_events():

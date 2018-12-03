@@ -5,11 +5,12 @@ import os
 from pico2d import *
 import game_framework
 import game_world
+import gameover_state
+import end_state
 
 from background import FixedBackground as Background
 from boy import Boy
-from grass import Grass
-from enemy import Enemy
+from thyroid import Thyroid
 from wall import Wall
 
 
@@ -17,9 +18,18 @@ name = "Stage1State"
 
 boy = None
 background = None
-time = 0.0
+maskimg = None
+starttime = None
+nextstagetimer = None
 
 def enter():
+
+    global maskimg
+    maskimg = load_image('resource\img\mask.png')
+    global starttime
+    starttime = 0.0
+    global nextstagetimer
+    nextstagetimer = 0.0
 
     global background
     background = Background('resource\img\stage1.png')
@@ -29,16 +39,23 @@ def enter():
     boy = Boy(0,0)
     game_world.add_object(boy, 1)
 
+    global thyroid
+    thyroid = Thyroid(1125,1200)
+    thyroid.center_object = boy
+    game_world.add_object(thyroid, 1)
+
     wall = Wall(100,100,400,400)
     game_world.add_object(wall, 1)
 
     background.set_center_object(boy)
     boy.set_background(background)
 
-    boy.x=0
-    boy.y=0
+    boy.x=1100
+    boy.y=700
 
 def exit():
+    global maskimg
+    del(maskimg)
     game_world.clear()
 
 
@@ -62,15 +79,11 @@ def handle_events():
 
 
 def update():
+    global starttime
+    global nextstagetimer
+
     for game_object in game_world.all_objects():
         game_object.update()
-    global time
-    time += game_framework.frame_time
-    if time > 2.0:
-        enemy = Enemy(50,random.randint(100,600),1.0,5, 0)
-        enemy.center_object = boy
-        game_world.add_object(enemy, 1)
-        time = 0.0
     for o in game_world.objects[1]:
         if o.name == 0 or o.name == 2:
             if o.x > 2048:
@@ -82,10 +95,24 @@ def update():
             if o.y < 0:
                 o.y =0
 
+    if thyroid.hp == 0:
+        nextstagetimer += game_framework.frame_time
+        if nextstagetimer>2.0:
+            game_world.clear()
+            game_framework.change_state(end_state)
+
+    if boy.hp == 0:
+        starttime += game_framework.frame_time
+        if starttime > 3.0:
+            game_world.clear()
+            game_framework.change_state(gameover_state)
 
 
 def draw():
     clear_canvas()
     for game_object in game_world.all_objects():
         game_object.draw()
+    if starttime > 0.1:
+        maskimg.opacify(starttime*0.33)
+        maskimg.draw(1024/2, 768/2)
     update_canvas()

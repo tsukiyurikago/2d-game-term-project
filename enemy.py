@@ -29,6 +29,7 @@ key_event_table = {
 }
 
 
+
 # Boy States
 
 class IdleState:
@@ -78,6 +79,8 @@ class MoveState:
                     enemy.nucktime = 0.5
                     enemy.hp -= 1
                     enemy.size -=5
+                    enemy.detectionrange +=50
+                    enemy.hitsound.play()
             if bullet.name == 0:
                 enemy.distance = math.sqrt((bullet.x - enemy.x)**2 + (bullet.y - enemy.y)**2)
                 if enemy.distance < (bullet.size*0.5) + (enemy.size*0.5):
@@ -104,8 +107,10 @@ class MoveState:
                         enemy.cooltime += game_framework.frame_time
                         if enemy.cooltime >2.0:
                             enemy.cooltime = 0.0
+                        enemy.y += enemy.yspeed*0.9
+                        enemy.x += enemy.xspeed*0.9
 
-        if enemy.distance<300.0:
+        if enemy.distance<enemy.detectionrange or enemy.nucked:
             enemy.angle = math.atan2(-game_framework.stack[0].boy.y + enemy.y, -game_framework.stack[0].boy.x + enemy.x) + (90*3.14/180)
             if enemy.attacktype == 0:
                 enemy.speed = 90.0
@@ -173,19 +178,23 @@ next_state_table = {
 class Enemy:
 
     image = None
+    hitsound = None
 
-    def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10, attacktype = 0):
+    def __init__(self, x = 0, y = 0, size = 32, hp = 10, attacktype = 0 , detaction = 350):
         self.x, self.y = x, y
         if Enemy.image == None:
             Enemy.image = load_image('resource\img\enemy.png')
+        if Enemy.hitsound == None:
+            Enemy.hitsound = load_wav('resource\se\squishyblood.wav')
+            Enemy.hitsound.set_volume(50)
         self.font = load_font('ENCR10B.TTF', 16)
         self.frame = 0
         self.event_que = []
         self.cur_state = MoveState
         self.cur_state.enter(self, None)
-        self.size = 32
+        self.size = size
         self.angle = 0.0
-        self.spinspeed = spinspeed
+        self.spinspeed = 1.0
         self.speed = 50.0
         self.hp = hp
         self.name = 2
@@ -201,6 +210,7 @@ class Enemy:
         self.cooltime = 0.0
         self.nucktime =0.0
         self.nucked = False
+        self.detectionrange = detaction
 
     def set_center_object(self, boy):
         self.center_object = boy
@@ -228,4 +238,4 @@ class Enemy:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.cx - 60, self.cy + 50, '(hp: %d)' % self.hp, (255, self.hp*50, self.hp*50))
+        self.font.draw(self.cx - 60, self.cy + 50, '(hp: %d)' % self.hp, (255, self.hp*50, self.hp*25))

@@ -5,6 +5,7 @@ import random
 
 import game_world
 from bullet import Bullet
+from enemy import Enemy
 
 # Boy Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)
@@ -50,15 +51,16 @@ class MoveState:
 
         for bullet in game_world.objects[1]:
             if bullet.name == 1:
-                if math.sqrt((bullet.x - lymph_node.x)**2 + (bullet.y - lymph_node.y)**2) < lymph_node.size*0.5 + 8 and lymph_node.nucked == False:
+                if bullet.x+6 > lymph_node.x-(lymph_node.xsize/2) and bullet.x-6 < lymph_node.x + (lymph_node.xsize/2) and bullet.y+6 > lymph_node.y - (lymph_node.ysize/2) and bullet.y-6 < lymph_node.y + (lymph_node.ysize/2):
                     game_world.remove_object(bullet)
-                    lymph_node.nucked = True
-                    lymph_node.nucktime = 0.5
-                    lymph_node.hp -= 1
-                    lymph_node.size -=5
+                    if(lymph_node.nucked == False):
+                        lymph_node.nucked = True
+                        lymph_node.nucktime = 0.5
+                        lymph_node.hp -= 1
+                        lymph_node.hitsound.play()
             if bullet.name == 0:
                 lymph_node.distance = math.sqrt((bullet.x - lymph_node.x)**2 + (bullet.y - lymph_node.y)**2)
-                if lymph_node.distance < (bullet.size*0.5) + (lymph_node.size*0.5):
+                if bullet.x+(bullet.size*0.5) > lymph_node.x-(lymph_node.xsize/2) and bullet.x-(bullet.size*0.5) < lymph_node.x + (lymph_node.xsize/2) and bullet.y+(bullet.size*0.5) > lymph_node.y - (lymph_node.ysize/2) and bullet.y-(bullet.size*0.5) < lymph_node.y + (lymph_node.ysize/2):
                     lymph_node.speed = 0.0
                     lymph_node.xspeed = -math.sin(lymph_node.angle) * lymph_node.speed * game_framework.frame_time
                     lymph_node.yspeed = math.cos(lymph_node.angle) * lymph_node.speed * game_framework.frame_time
@@ -85,13 +87,9 @@ class MoveState:
 
         if lymph_node.distance<300.0:
             lymph_node.angle = math.atan2(-game_framework.stack[0].boy.y + lymph_node.y, -game_framework.stack[0].boy.x + lymph_node.x) + (90*3.14/180)
-            if lymph_node.attacktype == 0:
-                lymph_node.speed = 90.0
-            elif lymph_node.attacktype == 1:
-                lymph_node.attackstate = True
         else:
             lymph_node.attackstate = False
-            lymph_node.speed = 50.0
+            lymph_node.speed = 0.0
             lymph_node.timer -= game_framework.frame_time
             if lymph_node.timer < 0:
                 lymph_node.timer += 1.0
@@ -109,13 +107,28 @@ class MoveState:
 
             lymph_node.frame = (lymph_node.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
 
+        lymph_node.beattimer += game_framework.frame_time
+        lymph_node.spawntimer += game_framework.frame_time
+
+        if lymph_node.spawntimer>lymph_node.spawncycle:
+            enemy = Enemy(lymph_node.x + random.randint(-150,150),lymph_node.y + random.randint(-100,-50),lymph_node.hp*8,lymph_node.hp, random.randint(0,1), 250)
+            enemy.center_object = game_framework.stack[0].boy
+            game_world.add_object(enemy, 1)
+            time = 0.0
+            lymph_node.spawntimer = 0.0
+        lymph_node.spawncycle = lymph_node.hp*0.9
+
+
+        if lymph_node.beattimer>3.0:
+            lymph_node.beattimer = 0.0
+
     @staticmethod
     def draw(lymph_node):
         if lymph_node.nucked:
             lymph_node.image.opacify(math.cos(lymph_node.nucktime*30))
         else:
             lymph_node.image.opacify(1)
-            lymph_node.image.rotate_draw(lymph_node.angle,lymph_node.cx,lymph_node.cy,lymph_node.size,lymph_node.size)
+        lymph_node.image.draw(lymph_node.cx,lymph_node.cy,math.cos(math.sin(lymph_node.beattimer*5)*(12-lymph_node.hp))*10+lymph_node.xsize,math.cos(math.sin(lymph_node.beattimer*5)*(12-lymph_node.hp))*5+lymph_node.ysize)
 
 
 
@@ -124,14 +137,15 @@ class MoveState:
 
 
 next_state_table = {
-    MoveState: {},
+    MoveState: {}
 }
 
 class Lymphnode:
 
     image = None
+    hitsound = None
 
-    def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10, attacktype = 0):
+    def __init__(self, x = 0, y = 0, spinspeed = 1.0, hp = 10):
         self.x, self.y = x, y
         if Lymphnode.image == None:
             Lymphnode.image = load_image('resource\img\lymph_node.png')
@@ -153,11 +167,16 @@ class Lymphnode:
         self.mp = 100
         self.distance = 0
         self.timer = 0.0
-        self.attacktype = attacktype
         self.attackstate = False
         self.cooltime = 0.0
         self.nucktime =0.0
         self.nucked = False
+        self.beattimer = 0.0
+        self.xsize=400.0
+        self.ysize = 200.0
+        self.spawncycle = 10.0
+        self.spawntimer = 0.0
+        self.hitsound = load_wav('resource\se\\blood.wav')
 
     def set_center_object(self, boy):
         self.center_object = boy

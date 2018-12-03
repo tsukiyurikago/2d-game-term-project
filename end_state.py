@@ -3,7 +3,7 @@ import title_state
 from pico2d import *
 
 
-name = "GameoverState"
+name = "EndState"
 image = None
 
 maskimg = None
@@ -11,7 +11,7 @@ starttime = None
 
 def enter():
     global image
-    image = load_image('resource\img\gameover.png')
+    image = load_image('resource\img\end.png')
 
     global maskimg
     maskimg = load_image('resource\img\mask.png')

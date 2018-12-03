@@ -240,10 +240,11 @@ class Boy:
         self.bulletamount = 5
         self.bullettimer = 0.0
         self.firesound = load_wav('resource\se\sel_l.wav')
-        self.firesound.set_volume(30)
+        self.firesound.set_volume(10)
         self.godmod = False
         self.nucktime = 0.0
         self.cooltime = 0.0
+        self.super = False
 
 
     def fire_bullet(self):
@@ -285,6 +286,10 @@ class Boy:
 
 
     def handle_event(self, event):
+        if event.key == SDLK_9:
+            self.super=True
+        if event.key == SDLK_0:
+            self.super=False
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
